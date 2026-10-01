@@ -1,5 +1,4 @@
-// Importa a função da pasta lib
-import { gerarDesenho } from '/lib/desenho.js';
+import { gerarDesenho } from '../../lib/desenho.js';
 
 export async function onRequest(context) {
     const { request, env } = context;
@@ -37,6 +36,7 @@ export async function onRequest(context) {
     }
 
     const emailAssinatura = tokenInfo.email;
+
     const svgGerado = gerarDesenho(numero, emailAssinatura);
 
     return new Response(svgGerado, {
