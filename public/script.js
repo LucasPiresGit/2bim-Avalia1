@@ -1,6 +1,5 @@
-// Função chamada automaticamente pelo Google após o login bem-sucedido
 async function handleCredentialResponse(response) {
-    const token = response.credential; // Este é o id_token
+    const token = response.credential;
     const numeroInput = document.getElementById('numero').value;
     const resultadoDiv = document.getElementById('resultado');
 

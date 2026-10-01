@@ -123,7 +123,7 @@ figure svg {
 }
 
 #baixar {
-  margin-top: 16px;
+  margin-top: 15px;
   color: var(--texto);
   background: transparent;
   border: 1px solid var(--borda);
