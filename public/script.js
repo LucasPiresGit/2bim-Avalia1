@@ -1,46 +1,32 @@
-// script.js
-// Versao inicial: todo o trabalho acontece no navegador.
-// A tarefa consiste em levar gerarDesenho para o servidor (Pages Functions)
-// e fazer esta pagina apenas enviar o numero e exibir a resposta.
+// Função chamada automaticamente pelo Google após o login bem-sucedido
+async function handleCredentialResponse(response) {
+    const token = response.credential; // Este é o id_token
+    const numeroInput = document.getElementById('numero').value;
+    const resultadoDiv = document.getElementById('resultado');
 
-import { gerarDesenho, numeroValido } from "./desenho.js";
+    resultadoDiv.innerHTML = 'Processando...';
 
-const formulario = document.getElementById("formulario");
-const campoNumero = document.getElementById("numero");
-const campoEmail = document.getElementById("email");
-const area = document.getElementById("desenho");
-const mensagem = document.getElementById("mensagem");
-const botaoBaixar = document.getElementById("baixar");
+    try {
+        const res = await fetch('/api/desenho', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ numero: Number(numeroInput) })
+        });
 
-let svgAtual = "";
-
-formulario.addEventListener("submit", (evento) => {
-  evento.preventDefault();
-  mensagem.textContent = "";
-
-  const numero = Number(campoNumero.value);
-  const email = campoEmail.value.trim();
-
-  if (!numeroValido(numero)) {
-    mensagem.textContent = "Digite um inteiro entre 1 e 100.";
-    return;
-  }
-  if (email === "") {
-    mensagem.textContent = "Informe um e-mail.";
-    return;
-  }
-
-  svgAtual = gerarDesenho(numero, email);
-  area.innerHTML = svgAtual;
-  botaoBaixar.hidden = false;
-});
-
-botaoBaixar.addEventListener("click", () => {
-  const arquivo = new Blob([svgAtual], { type: "image/svg+xml" });
-  const url = URL.createObjectURL(arquivo);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "exemplo.svg";
-  link.click();
-  URL.revokeObjectURL(url);
-});
+        if (res.status === 200) {
+            const svg = await res.text();
+            resultadoDiv.innerHTML = svg;
+        } else if (res.status === 400) {
+            resultadoDiv.innerHTML = '<p style="color: red;">Erro 400: Dados inválidos. Verifique se o número está entre 1 e 100.</p>';
+        } else if (res.status === 401) {
+            resultadoDiv.innerHTML = '<p style="color: red;">Erro 401: Não autorizado. Falha na validação do login.</p>';
+        } else {
+            resultadoDiv.innerHTML = `<p style="color: red;">Erro ${res.status}: Operação não permitida.</p>`;
+        }
+    } catch (error) {
+        resultadoDiv.innerHTML = '<p style="color: red;">Erro de comunicação com o servidor.</p>';
+    }
+}

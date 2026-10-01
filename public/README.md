@@ -24,4 +24,4 @@ Framework preset: `None`. Build command: vazio. Build output directory: `public`
 
 Nome: Lucas Oliveira Pires
 RA: 2024100445
-URL: https://
+URL: https://2bim-avalia1-lucas.pages.dev/
